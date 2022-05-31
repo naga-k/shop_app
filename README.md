@@ -2,6 +2,9 @@
 
 A new Flutter project.
 
+From the Flutter course on Udemy
+https://www.udemy.com/course/learn-flutter-dart-to-build-ios-android-apps
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
