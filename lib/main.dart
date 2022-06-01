@@ -9,8 +9,10 @@ import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/product_details_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -23,8 +25,15 @@ class MyApp extends StatelessWidget {
     fontFamily: 'Lato',
   );
 
+  // Future<void> initializeDefault() async {
+  //   await Firebase.initializeApp(
+  //     options: DefaultFirebaseOptions.currentPlatform,
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
+    final Future<FirebaseApp> fbApp = Firebase.initializeApp();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => ProductsProvider()),
@@ -39,7 +48,23 @@ class MyApp extends StatelessWidget {
             secondary: Colors.deepOrange,
           ),
         ),
-        home: const ProductsOverviewScreen(),
+        home: FutureBuilder(
+          future: fbApp,
+          builder: (ctx, snapshot) {
+            if (snapshot.hasError) {
+              print("you have an error ${snapshot.error.toString()}");
+              return Text('Error');
+            } else if (snapshot.hasData) {
+              print("has data");
+              return ProductsOverviewScreen();
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
+        //const ProductsOverviewScreen(),
         routes: {
           ProductDetailsScreen.routeName: (ctx) => const ProductDetailsScreen(),
           CartScreen.routeName: (ctx) => const CartScreen(),
