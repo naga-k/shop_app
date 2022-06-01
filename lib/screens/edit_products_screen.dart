@@ -83,20 +83,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
     return Container(
       width: 100,
       height: 100,
-      margin: EdgeInsets.only(top: 8, right: 10),
+      margin: const EdgeInsets.only(top: 8, right: 10),
       decoration:
           BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
       child: _checkImageUrlValid(imageUrl)
           ? FittedBox(
+              fit: BoxFit.contain,
               child: Image.network(
                 imageUrl,
                 errorBuilder: ((context, error, stackTrace) {
-                  return Text('Check URL');
+                  return const Text('Check URL');
                 }),
               ),
-              fit: BoxFit.contain,
             )
-          : Center(child: Text('Enter a URL')),
+          : const Center(child: Text('Enter a URL')),
     );
   }
 
@@ -123,8 +123,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Edit Product'),
-          actions: [IconButton(onPressed: _saveForm, icon: Icon(Icons.save))],
+          title: const Text('Edit Product'),
+          actions: [
+            IconButton(onPressed: _saveForm, icon: const Icon(Icons.save))
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
@@ -134,7 +136,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 child: Column(
                   children: [
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'Title'),
+                      decoration: const InputDecoration(labelText: 'Title'),
                       initialValue: title,
                       textInputAction: TextInputAction.next,
                       validator: (value) {
@@ -148,7 +150,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                     ),
                     TextFormField(
-                        decoration: InputDecoration(labelText: 'Price'),
+                        decoration: const InputDecoration(labelText: 'Price'),
                         initialValue: price.toString(),
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
@@ -172,7 +174,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           }
                         }),
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'Description'),
+                      decoration:
+                          const InputDecoration(labelText: 'Description'),
                       initialValue: description,
                       maxLines: 3,
                       keyboardType: TextInputType.multiline,
@@ -195,7 +198,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         validImagePreview(_imageUrlController.text),
                         Expanded(
                           child: TextFormField(
-                            decoration: InputDecoration(labelText: 'Image URL'),
+                            decoration:
+                                const InputDecoration(labelText: 'Image URL'),
                             keyboardType: TextInputType.url,
                             textInputAction: TextInputAction.done,
                             controller: _imageUrlController,

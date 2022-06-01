@@ -13,19 +13,19 @@ class UserProductsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final productsData = Provider.of<ProductsProvider>(context);
     return Scaffold(
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       appBar: AppBar(
-        title: Text('Your Products'),
+        title: const Text('Your Products'),
         actions: [
           IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(EditProductScreen.routeName);
               },
-              icon: Icon(Icons.add))
+              icon: const Icon(Icons.add))
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: ListView.builder(
             itemCount: productsData.items.length,
             itemBuilder: (ctx, i) => Column(
@@ -34,7 +34,7 @@ class UserProductsScreen extends StatelessWidget {
                         id: productsData.items[i].id,
                         title: productsData.items[i].title,
                         imageUrl: productsData.items[i].imageUrl),
-                    Divider(),
+                    const Divider(),
                   ],
                 )),
       ),
