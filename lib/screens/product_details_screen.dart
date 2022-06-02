@@ -4,7 +4,7 @@ import 'package:shop_app/providers/product_model.dart';
 import 'package:shop_app/providers/products.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
-  static const routeName = 'productDetailsScreenRoute';
+  static const routeName = '/productDetailsScreenRoute';
   const ProductDetailsScreen({Key? key}) : super(key: key);
 
   @override

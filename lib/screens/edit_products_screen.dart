@@ -102,11 +102,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       await showDialog(
           context: context,
           builder: ((ctx) => AlertDialog(
-                title: Text('An error occured'),
-                content: Text('Something went wrong'),
+                title: const Text('An error occured'),
+                content: const Text('Something went wrong'),
                 actions: [
                   TextButton(
-                    child: Text('Okay'),
+                    child: const Text('Okay'),
                     onPressed: () {
                       Navigator.of(ctx).pop();
                     },
@@ -155,8 +155,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
           ],
         ),
         body: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
+            ? const Center(
+                child: const CircularProgressIndicator(),
               )
             : Padding(
                 padding: const EdgeInsets.all(16),
