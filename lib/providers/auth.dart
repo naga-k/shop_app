@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -6,11 +7,17 @@ import 'package:shop_app/models/http_exceptions.dart';
 
 class Auth with ChangeNotifier {
   late String? _token;
+  // ignore: avoid_init_to_null
   late DateTime? _expirey = null;
   late String? _userId;
+  late Timer? _authTimer;
 
   bool get isAuth {
     return token != null;
+  }
+
+  String? get userId {
+    return _userId;
   }
 
   String? get token {
@@ -37,9 +44,11 @@ class Auth with ChangeNotifier {
         throw HttpException(message: 'Could not authenticate');
       }
       final responseData = json.decode(response.body);
+
       if (responseData['error'] != null) {
         throw HttpException(message: responseData['error']['message']);
       }
+
       _token = responseData['idToken'];
       _userId = responseData['localId'];
       _expirey = DateTime.now().add(
@@ -47,7 +56,7 @@ class Auth with ChangeNotifier {
           seconds: int.parse(responseData['expiresIn']),
         ),
       );
-      print(jsonDecode(response.body));
+      _autoLogout();
       notifyListeners();
     } catch (error) {
       rethrow;
@@ -55,10 +64,32 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> signUp(String email, String password) async {
-    return _authenticate(email, password, 'signUp');
+    try {
+      return _authenticate(email, password, 'signUp');
+    } catch (error) {
+      print(error);
+      rethrow;
+    }
   }
 
   Future<void> logIn(String email, String password) async {
-    return _authenticate(email, password, 'signInWithPassword');
+    try {
+      return _authenticate(email, password, 'signInWithPassword');
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  void logout() {
+    _token = null;
+    _userId = null;
+    _expirey = null;
+    notifyListeners();
+  }
+
+  void _autoLogout() {
+    _authTimer?.cancel();
+    final timeToExpire = _expirey!.difference(DateTime.now()).inSeconds;
+    _authTimer = Timer(Duration(seconds: timeToExpire), logout);
   }
 }

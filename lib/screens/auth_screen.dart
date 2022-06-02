@@ -48,11 +48,11 @@ class AuthScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(bottom: 20.0),
                       padding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 94.0),
-                      transform: Matrix4.rotationZ(-8 * pi / 180)
-                        ..translate(-10.0),
+                      transform: Matrix4.rotationZ(-10 * pi / 180)
+                        ..translate(-50.0),
                       // ..translate(-10.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(60),
                         color: Colors.deepOrange.shade900,
                         boxShadow: const [
                           BoxShadow(
@@ -63,7 +63,7 @@ class AuthScreen extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        'MyShop',
+                        'The Shop!',
                         style: TextStyle(
                           color: Theme.of(context).textTheme.subtitle1?.color,
                           fontSize: 50,
@@ -142,9 +142,6 @@ class _AuthCardState extends State<AuthCard> {
         await Provider.of<Auth>(context, listen: false)
             .signUp(_authData['email']!, _authData['password']!);
       }
-      setState(() {
-        _isLoading = false;
-      });
     } on HttpException catch (error) {
       String errorMessage = 'Authentication failed';
       if (errorMessage.toString().contains('EMAIL_EXISTS')) {
@@ -158,10 +155,15 @@ class _AuthCardState extends State<AuthCard> {
       } else if (error.toString().contains('INVALID_PASSWORD')) {
         errorMessage = 'Invalid password';
       }
+      _showDialog(errorMessage);
     } catch (error) {
       String errorMessage =
           'Could not authenticate you. Please try again later';
+      _showDialog(errorMessage);
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _switchAuthMode() {

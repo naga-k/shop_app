@@ -7,9 +7,11 @@ import 'package:http/http.dart' as http;
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items;
-  final String authToken;
+  final String? authToken;
+  final String? userId;
+  final String serverUrl = 'shop-app-91095-default-rtdb.firebaseio.com';
 
-  ProductsProvider(this.authToken, this._items);
+  ProductsProvider(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     return [..._items];
@@ -23,15 +25,20 @@ class ProductsProvider with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    print('Auth token $authToken');
-    final url = Uri.https('shop-app-91095-default-rtdb.firebaseio.com',
-        '/products.json', {'auth': authToken});
-    print(url);
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    Map<String, String> headers = {'auth': authToken!};
+    if (filterByUser) {
+      headers['orderBy'] = '"creatorId"';
+      headers['equalTo'] = '"$userId"';
+    }
+    final url = Uri.https(serverUrl, '/products.json', headers);
     try {
-      final reponse = await http.get(url);
-      final extractedData = json.decode(reponse.body) as Map<String, dynamic>;
-      print(extractedData);
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final favoriteUrl = Uri.https(
+          serverUrl, '/userFavorites/$userId.json', {'auth': authToken});
+      final favoriteResponse = await http.get(favoriteUrl);
+      final favouriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodDetails) {
         loadedProducts.add(Product(
@@ -40,20 +47,19 @@ class ProductsProvider with ChangeNotifier {
           description: prodDetails['description'],
           price: prodDetails['price'],
           imageUrl: prodDetails['imageUrl'],
-          isFavourite: prodDetails['isFavorite'],
+          isFavourite:
+              favouriteData == null ? false : favouriteData[prodId] ?? false,
         ));
       });
       _items = loadedProducts;
     } catch (error) {
-      print(error);
       rethrow;
     }
     notifyListeners();
   }
 
   Future<http.Response> addNewProductToServer(Product product) async {
-    final url = Uri.https('shop-app-91095-default-rtdb.firebaseio.com',
-        '/products.json', {'auth': authToken});
+    final url = Uri.https(serverUrl, '/products.json', {'auth': authToken});
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -70,8 +76,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<http.Response> updateProductOnServer(Product product) async {
-    final url = Uri.https('shop-app-91095-default-rtdb.firebaseio.com',
-        '/products/${product.id}.json', {'auth': authToken});
+    final url = Uri.https(
+        serverUrl, '/products/${product.id}.json', {'auth': authToken});
     try {
       final response = await http.patch(url,
           body: json.encode({
@@ -123,8 +129,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String prodId) async {
-    final url = Uri.https('shop-app-91095-default-rtdb.firebaseio.com',
-        '/products/${prodId}.json', {'auth': authToken});
+    final url =
+        Uri.https(serverUrl, '/products/${prodId}.json', {'auth': authToken});
     final existingProductIndex = _items.indexWhere((prod) => prod.id == prodId);
     Product? existingProduct = _items[existingProductIndex];
     _items.removeWhere((prod) => prod.id == prodId);
