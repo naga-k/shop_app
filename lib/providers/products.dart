@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:shop_app/providers/product_model.dart';
@@ -114,20 +115,19 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String prodId) {
+  Future<void> deleteProduct(String prodId) async {
     final url = Uri.https('shop-app-91095-default-rtdb.firebaseio.com',
         '/products/${prodId}.json');
     final existingProductIndex = _items.indexWhere((prod) => prod.id == prodId);
-    final existingProduct = _items[existingProductIndex];
+    Product? existingProduct = _items[existingProductIndex];
     _items.removeWhere((prod) => prod.id == prodId);
-    http.delete(url).then((value) {
-      if (value.statusCode >= 400) {
-        // throw
-      }
-    }).catchError((onError) {
-      _items.insert(existingProductIndex, existingProduct);
-    });
-
     notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw const HttpException('Could not delete product');
+    }
+    existingProduct = null;
   }
 }
