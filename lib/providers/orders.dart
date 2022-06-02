@@ -19,20 +19,29 @@ class OrderItem {
 
 class OrdersProvider with ChangeNotifier {
   final List<OrderItem> _orders;
-  final String authToken;
+  final String? authToken;
+  final String? userId;
+  final String serverUrl = 'shop-app-91095-default-rtdb.firebaseio.com';
+  late String userPath;
+  late Map<String, String> headers;
 
-  OrdersProvider(this.authToken, this._orders);
+  OrdersProvider(this.authToken, this.userId, this._orders) {
+    userPath = 'orders/$userId.json';
+    headers = {'auth': authToken!};
+  }
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
   Future<void> fetchAndSetOrders() async {
-    final url = Uri.https('shop-app-91095-default-rtdb.firebaseio.com',
-        '/orders.json', {'auth': authToken});
+    final url = Uri.https(serverUrl, userPath, headers);
     try {
       final response = await http.get(url);
-      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final extractedData = json.decode(response.body) as Map<String, dynamic>?;
+      if (extractedData == null) {
+        return;
+      }
       final List<OrderItem> loadedOrders = [];
       extractedData.forEach((orderId, orderData) {
         loadedOrders.add(OrderItem(
@@ -60,8 +69,7 @@ class OrdersProvider with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final url = Uri.https('shop-app-91095-default-rtdb.firebaseio.com',
-        '/orders.json', {'auth': authToken});
+    final url = Uri.https(serverUrl, userPath, headers);
     final timeStamp = DateTime.now();
     http.post(url,
         body: jsonEncode({
