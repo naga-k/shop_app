@@ -52,10 +52,8 @@ class MyApp extends StatelessWidget {
           future: fbApp,
           builder: (ctx, snapshot) {
             if (snapshot.hasError) {
-              print("you have an error ${snapshot.error.toString()}");
               return Text('Error');
             } else if (snapshot.hasData) {
-              print("has data");
               return ProductsOverviewScreen();
             } else {
               return Center(
