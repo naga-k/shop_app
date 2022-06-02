@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/http_exceptions.dart';
 import 'package:shop_app/providers/auth.dart';
@@ -159,6 +158,7 @@ class _AuthCardState extends State<AuthCard> {
     } catch (error) {
       String errorMessage =
           'Could not authenticate you. Please try again later';
+      print("thsi is the errro $error");
       _showDialog(errorMessage);
     }
     setState(() {

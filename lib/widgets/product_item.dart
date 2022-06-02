@@ -56,6 +56,17 @@ class ProductItem extends StatelessWidget {
           child: Image.network(
             product.imageUrl,
             fit: BoxFit.cover,
+            loadingBuilder: (ctx, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          (loadingProgress.expectedTotalBytes as num)
+                      : null,
+                ),
+              );
+            },
           ),
         ),
       ),
