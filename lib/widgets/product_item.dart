@@ -49,26 +49,21 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed(ProductDetailsScreen.routeName,
-                arguments: product.id);
-          },
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
-            loadingBuilder: (ctx, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          (loadingProgress.expectedTotalBytes as num)
-                      : null,
-                ),
-              );
+            onTap: () {
+              Navigator.of(context).pushNamed(ProductDetailsScreen.routeName,
+                  arguments: product.id);
             },
-          ),
-        ),
+            child: Hero(
+              tag: product.id,
+              child: FadeInImage(
+                placeholder:
+                    const AssetImage('assets/images/product-placeholder.png'),
+                image: NetworkImage(
+                  product.imageUrl,
+                ),
+                fit: BoxFit.cover,
+              ),
+            )),
       ),
     );
   }

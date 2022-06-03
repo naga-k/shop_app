@@ -26,7 +26,7 @@ class Cart with ChangeNotifier {
 
   Cart(this.authToken, this.userId, this._items) {
     userPath = 'cart/$userId.json';
-    headers = {'auth': authToken!};
+    headers = {'auth': authToken ?? ''};
   }
 
   Map<String, CartItem> get items {
