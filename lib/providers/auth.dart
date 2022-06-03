@@ -41,9 +41,9 @@ class Auth with ChangeNotifier {
             'password': password,
             'returnSecureToken': true,
           }));
-      if (response.body == null) {
-        throw HttpException(message: 'Could not authenticate');
-      }
+      // if (response.body == null) {
+      //   throw HttpException(message: 'Could not authenticate');
+      // }
       final responseData = json.decode(response.body);
 
       if (responseData['error'] != null) {
@@ -75,7 +75,6 @@ class Auth with ChangeNotifier {
     try {
       return _authenticate(email, password, 'signUp');
     } catch (error) {
-      print(error);
       rethrow;
     }
   }

@@ -4,62 +4,97 @@ import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/providers/orders.dart';
 import 'package:shop_app/widgets/cart_item.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static const routeName = "/cartScreenRoute";
   const CartScreen({Key? key}) : super(key: key);
 
   @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  late Future _cartFuture;
+
+  Future _fetchAndSetCartItems() async {
+    final cartProvider = Provider.of<Cart>(context, listen: false);
+    _cartFuture = cartProvider.fetchAndSetCartItems();
+  }
+
+  @override
+  void initState() {
+    _fetchAndSetCartItems();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context);
-    final cartItems = cart.items;
+    final cartProvider = Provider.of<Cart>(context, listen: false);
+    final cartItems = cartProvider.items;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
       ),
-      body: Column(children: [
-        Card(
-          margin: const EdgeInsets.all(15),
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Total",
-                    style: TextStyle(fontSize: 20),
+      body: FutureBuilder(
+          future: _cartFuture,
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              print("connection done");
+              return Column(children: [
+                Card(
+                  margin: const EdgeInsets.all(15),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Total",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          const Spacer(),
+                          Chip(
+                            label: Text(
+                              "\$${cartProvider.totalAmount.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .primaryTextTheme
+                                      .subtitle1
+                                      ?.color),
+                            ),
+                            backgroundColor: Theme.of(ctx).colorScheme.primary,
+                          ),
+                          OrderButton(cart: cartProvider, cartItems: cartItems)
+                        ]),
                   ),
-                  const Spacer(),
-                  Chip(
-                    label: Text(
-                      "\$${cart.totalAmount.toStringAsFixed(2)}",
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .primaryTextTheme
-                              .subtitle1
-                              ?.color),
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  OrderButton(cart: cart, cartItems: cartItems)
-                ]),
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Expanded(
-            child: ListView.builder(
-                itemCount: cart.itemCount,
-                itemBuilder: (ctx, i) {
-                  return CartItemWidget(
-                    id: cartItems.values.toList()[i].id,
-                    price: cartItems.values.toList()[i].price,
-                    quantity: cartItems.values.toList()[i].quantity,
-                    title: cartItems.values.toList()[i].title,
-                    productId: cartItems.keys.toList()[i],
-                  );
-                }))
-      ]),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                    child: Consumer<Cart>(
+                  builder: (ctx, cart, child) => ListView.builder(
+                      itemCount: cart.itemCount,
+                      itemBuilder: (ctx, i) {
+                        return CartItemWidget(
+                          id: cart.items.values.toList()[i].id,
+                          price: cart.items.values.toList()[i].price,
+                          quantity: cart.items.values.toList()[i].quantity,
+                          title: cart.items.values.toList()[i].title,
+                          productId: cart.items.keys.toList()[i],
+                        );
+                      }),
+                ))
+              ]);
+            } else {
+              return const Center(
+                child: Text('Error'),
+              );
+            }
+          }),
     );
   }
 }
