@@ -130,7 +130,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> deleteProduct(String prodId) async {
     final url =
-        Uri.https(serverUrl, '/products/${prodId}.json', {'auth': authToken});
+        Uri.https(serverUrl, '/products/$prodId.json', {'auth': authToken});
     final existingProductIndex = _items.indexWhere((prod) => prod.id == prodId);
     Product? existingProduct = _items[existingProductIndex];
     _items.removeWhere((prod) => prod.id == prodId);
