@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           theme: theme.copyWith(
             colorScheme: theme.colorScheme.copyWith(
               primary: Colors.purple,
-              secondary: Colors.deepOrange,
+              secondary: Colors.amber,
             ),
             pageTransitionsTheme: PageTransitionsTheme(
               builders: {
