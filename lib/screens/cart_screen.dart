@@ -38,11 +38,10 @@ class _CartScreenState extends State<CartScreen> {
           future: _cartFuture,
           builder: (ctx, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.connectionState == ConnectionState.done) {
-              print("connection done");
               return Column(children: [
                 Card(
                   margin: const EdgeInsets.all(15),
@@ -133,9 +132,9 @@ class _OrderButtonState extends State<OrderButton> {
                 widget.cart.clearCart();
               }),
         child: _isLoading
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : Text("ORDER NOW"));
+            : const Text("ORDER NOW"));
   }
 }

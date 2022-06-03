@@ -33,7 +33,7 @@ class UserProductsScreen extends StatelessWidget {
         future: _refreshProducts(context),
         builder: (ctx, snapshot) => snapshot.connectionState ==
                 ConnectionState.waiting
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(),
               )
             : RefreshIndicator(

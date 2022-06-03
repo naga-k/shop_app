@@ -8,8 +8,7 @@ import 'package:shop_app/models/http_exceptions.dart';
 
 class Auth with ChangeNotifier {
   late String? _token;
-  // ignore: avoid_init_to_null
-  late DateTime? _expirey = null;
+  DateTime? _expirey;
   late String? _userId;
   Timer? _authTimer;
 
@@ -118,7 +117,7 @@ class Auth with ChangeNotifier {
 
   void _autoLogout() {
     _authTimer?.cancel();
-    final timeToExpire = _expirey!.difference(DateTime.now()).inSeconds;
-    _authTimer = Timer(Duration(seconds: timeToExpire), logout);
+    final timeToExpire = _expirey?.difference(DateTime.now()).inSeconds;
+    _authTimer = Timer(Duration(seconds: timeToExpire!), logout);
   }
 }
